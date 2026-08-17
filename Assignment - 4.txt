@@ -1,0 +1,22 @@
+# Experiment 4: Calculate the nth Fibonacci number efficiently
+
+def fibonacci(n):
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+
+    a, b = 0, 1
+
+    for i in range(2, n + 1):
+        c = a + b
+        a = b
+        b = c
+
+    return b
+
+
+n = int(input("Enter the value of n: "))
+result = fibonacci(n)
+
+print("The", n, "th Fibonacci number is:", result)
