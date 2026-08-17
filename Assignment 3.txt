@@ -1,0 +1,50 @@
+from abc import ABC, abstractmethod
+
+# 1. Define PaymentStrategy interface
+class PaymentStrategy(ABC):
+    @abstractmethod
+    def pay(self, amount):
+        pass
+
+
+# 2. Implement various payment strategies
+class CreditCardPayment(PaymentStrategy):
+    def pay(self, amount):
+        print(f"Paid ₹{amount} using Credit Card.")
+
+
+class PayPalPayment(PaymentStrategy):
+    def pay(self, amount):
+        print(f"Paid ₹{amount} using PayPal.")
+
+
+class BitcoinPayment(PaymentStrategy):
+    def pay(self, amount):
+        print(f"Paid ₹{amount} using Bitcoin.")
+
+
+# 3. Create PaymentProcessor class
+class PaymentProcessor:
+    def __init__(self, strategy: PaymentStrategy):
+        self.strategy = strategy
+
+    def set_strategy(self, strategy: PaymentStrategy):
+        self.strategy = strategy
+
+    def process_payment(self, amount):
+        self.strategy.pay(amount)
+
+
+# 4. Switch strategies at runtime
+if __name__ == "__main__":
+    # Start with Credit Card
+    processor = PaymentProcessor(CreditCardPayment())
+    processor.process_payment(1000)
+
+    # Switch to PayPal
+    processor.set_strategy(PayPalPayment())
+    processor.process_payment(500)
+
+    # Switch to Bitcoin
+    processor.set_strategy(BitcoinPayment())
+    processor.process_payment(2000)
