@@ -1,0 +1,27 @@
+def knapsack_bottom_up(values, weights, W):
+    n = len(values)
+
+    # Create DP table
+    dp = [[0 for _ in range(n + 1)] for _ in range(W + 1)]
+
+    # Fill DP table
+    for i in range(1, n + 1):
+        for w in range(W + 1):
+
+            if weights[i - 1] <= w:
+                dp[w][i] = max(
+                    dp[w][i - 1],
+                    dp[w - weights[i - 1]][i - 1] + values[i - 1]
+                )
+            else:
+                dp[w][i] = dp[w][i - 1]
+
+    return dp[W][n]
+
+
+# Example usage
+values = [60, 100, 120]
+weights = [10, 20, 30]
+W = 50
+
+print("Maximum value:", knapsack_bottom_up(values, weights, W))
