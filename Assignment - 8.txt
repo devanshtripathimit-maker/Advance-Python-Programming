@@ -1,0 +1,27 @@
+# Open the input file in read mode
+input_file = open("input.txt", "r")
+
+# Read all lines into a list
+readlines = input_file.readlines()
+
+# Count the number of lines
+count = len(readlines)
+
+print("Total number of lines:", count)
+
+# Extract the first two lines
+first_two_lines = readlines[:2]
+
+# Close the input file
+input_file.close()
+
+# Open the output file in write mode
+output_file = open("output.txt", "w")
+
+# Write the first two lines to output file
+output_file.writelines(first_two_lines)
+
+# Close the output file
+output_file.close()
+
+print("Extracted lines written to output.txt")
