@@ -1,0 +1,19 @@
+import re
+
+def find_emails(text):
+    # Regex pattern for email addresses
+    pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+
+    # Find all matching email addresses
+    emails = re.findall(pattern, text)
+
+    return emails
+
+
+# Main program
+text = input("Enter a string: ")
+
+emails = find_emails(text)
+
+print("Email addresses found:")
+print(emails)
