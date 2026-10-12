@@ -1,0 +1,10 @@
+import pandas as pd
+import random
+
+# Create a Pandas Series with 10 random numbers
+numbers = [random.randint(1, 100) for i in range(10)]
+series = pd.Series(numbers)
+
+# Display the Series
+print("Pandas Series with 10 random numbers:")
+print(series)
