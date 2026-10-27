@@ -1,0 +1,152 @@
+#Required libraries
+#pip install pandas numpy matplotlib seaborn scipy
+
+# Customer Churn Data Analysis and Cleaning
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import zscore
+
+# 1. Load the dataset
+df = pd.read_csv("customer_churn.csv")
+
+# 2. Display first few records
+print("First Five Records:")
+print(df.head())
+
+print("\nDataset Information:")
+df.info()
+
+print("\nColumn Names:")
+print(df.columns)
+
+# 3. Descriptive Statistics
+print("\nMean:")
+print(df.mean(numeric_only=True))
+
+print("\nMedian:")
+print(df.median(numeric_only=True))
+
+print("\nMode:")
+print(df.mode().iloc[0])
+
+print("\nStandard Deviation:")
+print(df.std(numeric_only=True))
+
+print("\nVariance:")
+print(df.var(numeric_only=True))
+
+print("\nMinimum Values:")
+print(df.min(numeric_only=True))
+
+print("\nMaximum Values:")
+print(df.max(numeric_only=True))
+
+print("\n25th, 50th and 75th Percentiles:")
+print(df.quantile([0.25, 0.50, 0.75], numeric_only=True))
+
+print("\nDescriptive Statistics:")
+print(df.describe())
+
+# 4. Data Visualization
+num_df = df.select_dtypes(include=np.number)
+
+# Histogram
+num_df.hist(figsize=(12, 8))
+plt.suptitle("Histograms")
+plt.tight_layout()
+plt.show()
+
+# Box Plot
+plt.figure(figsize=(12, 6))
+sns.boxplot(data=num_df)
+plt.title("Box Plot - Outlier Detection")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+# Scatter Plot (first two numerical columns)
+if num_df.shape[1] >= 2:
+    plt.figure(figsize=(7, 5))
+    sns.scatterplot(x=num_df.iloc[:, 0], y=num_df.iloc[:, 1])
+    plt.title("Scatter Plot")
+    plt.tight_layout()
+    plt.show()
+
+# Correlation Matrix and Heatmap
+corr = num_df.corr()
+print("\nCorrelation Matrix:")
+print(corr)
+
+plt.figure(figsize=(10, 6))
+sns.heatmap(corr, annot=True, cmap="coolwarm", fmt=".2f")
+plt.title("Correlation Heatmap")
+plt.tight_layout()
+plt.show()
+
+# 5. Handle Missing Data
+print("\nMissing Values Before Cleaning:")
+print(df.isnull().sum())
+
+print("\nTotal Missing Values:")
+print(df.isnull().sum().sum())
+
+# Replace missing numerical values with their mean
+for col in num_df.columns:
+    df[col] = df[col].fillna(df[col].mean())
+
+# Remove rows with remaining missing values
+df = df.dropna()
+
+print("\nDataset After Handling Missing Values:")
+print(df.head())
+
+# 6. Detect and Handle Outliers using Z-score
+num_cols = df.select_dtypes(include=np.number).columns
+
+if len(num_cols) > 0:
+    z_scores = df[num_cols].apply(
+        lambda col: zscore(col, nan_policy="omit")
+        if col.std() != 0 else pd.Series(0, index=col.index)
+    )
+
+    outliers = (z_scores.abs() > 3).any(axis=1)
+
+    print("\nDetected Outliers:")
+    print(df.loc[outliers])
+
+    # Cap outliers using mean +/- 3 standard deviations
+    for col in num_cols:
+        mean = df[col].mean()
+        std = df[col].std()
+
+        lower_limit = mean - 3 * std
+        upper_limit = mean + 3 * std
+
+        df[col] = df[col].clip(lower=lower_limit, upper=upper_limit)
+
+print("\nDataset After Handling Outliers:")
+print(df.head())
+
+# 7. Verify Cleaned Dataset
+print("\nRemaining Missing Values:")
+print(df.isnull().sum())
+
+# Check remaining outliers
+if len(num_cols) > 0:
+    final_z = df[num_cols].apply(
+        lambda col: zscore(col, nan_policy="omit")
+        if col.std() != 0 else pd.Series(0, index=col.index)
+    )
+    print("\nRemaining Outlier Count:")
+    print((final_z.abs() > 3).sum())
+
+print("\nFinal Cleaned Dataset:")
+print(df)
+
+# 8. Save the Cleaned Dataset
+df.to_csv("cleaned_customer_churn.csv", index=False)
+
+print("\nCleaned dataset saved successfully!")
